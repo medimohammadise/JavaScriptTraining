@@ -1,0 +1,5 @@
+const factor={value:2};
+const numbers=[1,2,3];
+const product=e=>e*factor.value;
+factor.value=0;
+numbers.map(product).forEach(e=>console.log(e));
