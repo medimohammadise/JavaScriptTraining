@@ -1,7 +1,7 @@
 'use strict';
 var numberOfShapes;
 var shapes=[];
-var sides=[];
+var values=[];
 var shapeCount=0;
 var sideCount=0;
 for (let j = 0; j < process.argv.length; j++) {  
@@ -13,38 +13,39 @@ for (let j = 0; j < process.argv.length; j++) {
    }
    if (j>2+Number(numberOfShapes))
    {
-      sides[sideCount]=process.argv[j]
+      values[sideCount]=process.argv[j]
       sideCount++;
    }
 }
 //console.log(numberOfShapes);
 //console.log(shapes);
 //console.log(sides);
-var claculateArea =(shape,side) =>{
+let claculateArea =(shape,values) =>{
 let promise1 = new Promise( (resolve, reject) => {
   
   switch(shape) {
     case "rectangle":
-      if (side.length!=2)
+      if (values.length!=2)
         reject([-1]); 
-      resolve(side[0]*side[1]); 
+      resolve(values[0]*values[1]); 
       break;
     case "circle":
-      if (side.length!=1)
+      if (values.length!=1)
         reject('[-1]'); 
-      resolve(side[0]*3.14); 
+
+      resolve(Number((values[0]*3.14).toFixed(2))); 
       break;
     case "triangle":
-      if (side.length!=3)
+      if (values.length!=3)
         reject('[-1]'); 
-      const perimeter = (Number(side[0])+ Number(side[1]) + Number(side[2]))/2;
-      const area =  Math.sqrt(perimeter*((perimeter-side[0])*(perimeter-side[1])*(perimeter-side[2]))).toFixed(2);;
+      const perimeter = (Number(values[0])+ Number(values[1]) + Number(values[2]))/2;
+      const area =  Number(Math.sqrt(perimeter*((perimeter-values[0])*(perimeter-values[1])*(perimeter-values[2]))).toFixed(2));
       resolve(area);
       break;  
     case "square":
-      if (side.length!=1)
+      if (values.length!=1)
         reject('[-1]'); 
-      resolve(side[0]*side[0]);
+      resolve(values[0]*values[0]);
       break;
 
     default:
@@ -66,7 +67,7 @@ return promise1;
     console.log("failed message is "+message);
 })*/
 
-let getAreas=(shapes,sides)=>{
+let getAreas=(shapes,values_arr)=>{
    let sideCounter=-1;
    let side=[];
    let promises=[];
@@ -75,37 +76,76 @@ let getAreas=(shapes,sides)=>{
       switch(shape) {
         case "rectangle":
            sideCounter++;
-           side[0]=sides[sideCounter];
-           sideCounter++;
-           side[1]=sides[sideCounter];
+           side=values_arr[sideCounter].toString().split(',');
+           //sideCounter++;
+           //side[1]=sides[sideCounter];
           break;
         case "circle":
             sideCounter++;
-            side[0]=sides[sideCounter];
+            if (values_arr[sideCounter])
+            side[0]=values_arr[sideCounter];
             
 
           break;
         case "triangle":
           sideCounter++;
-          side[0]=sides[sideCounter];
-          sideCounter++;
+          if (values_arr[sideCounter])
+          side=values_arr[sideCounter].toString().split(',');
+         /* sideCounter++;
           side[1]=sides[sideCounter];
           sideCounter++;
-          side[2]=sides[sideCounter];
+          side[2]=sides[sideCounter];*/
           break;  
         case "square":
           sideCounter++;
-          side[0]=sides[sideCounter];
+          side[0]=values_arr[sideCounter];
           break;
 
       }
       //console.log(shape,side);
       promises.push(claculateArea(shape,side));
-    
+      //claculateArea(shape,side).then((res)=>{
+
+      // }).catch(error=>{console.log(error);
+       // promises.push(error); return error;});
+       
+       
+      
       
 
     });
-    return promises;
+    //return Promise.all(promises);
+    //return Promise.all(promises.map(p=>p.catch(() => "[-1]"));
+   return Promise.all(promises.filter(p=>  p.catch(()=>{return ["[-1]"]
+  }))).catch(e=>{return ['[-1]']});
+   //.reduce((item)=>{return [item==="[-1]"]}),0);
+    /*promiseValues.then(item=>{
+      console.log(item.indexOf('[-1]')>0);
+         if (item.indexOf('[-1]')>0)
+         {
+          console.log("value empty");
+          promiseValues=[]; 
+          promisesResult=new Promise((resolve, reject) => {resolve('[-1]');});
+         }
+      
+    });*/
+         
+    //return promiseValues;
+
+  
 }
 
-Promise.all(getAreas(shapes,sides)).then((message)=> console.log(message)).catch((message)=>console.log(message));
+//Promise.all(getAreas(shapes,sides)).then((message)=> console.log(message)).catch((message)=>console.log(message));
+let calCaulate=async (shapes,values)=>await claculateArea(shapes[0],values[0]).catch(error=>error) instanceof Promise;
+let callgetArea=(shapes,values)=>getAreas(shapes,values).catch(error=>error);
+
+if (calCaulate(shapes,values))
+{
+  callgetArea(shapes,values).then((res)=>{
+    console.log(res.join('\n')+'\n');
+
+  });
+}
+else{
+  console.error('error');
+}
