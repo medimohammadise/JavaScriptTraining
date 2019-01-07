@@ -5,4 +5,4 @@ Object.freeze(json);
 json.a=4;
 console.log(json);
 
-//Freez protect the object from changing but const rpotect reference
+//Freez protect the object from changing but const is used for protecting the reference

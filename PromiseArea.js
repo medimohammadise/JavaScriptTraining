@@ -27,29 +27,34 @@ let promise1 = new Promise( (resolve, reject) => {
     case "rectangle":
       if (values.length!=2)
         reject([-1]); 
+     
+      if (isNaN(values[0]) ||  isNaN(values[1]))  reject([-1]); 
       resolve(values[0]*values[1]); 
       break;
     case "circle":
+    
       if (values.length!=1)
-        reject('[-1]'); 
-
+        reject([-1]); 
+      if (isNaN(values[0]))  reject([-1]); 
       resolve(Number((values[0]*3.14).toFixed(2))); 
       break;
     case "triangle":
       if (values.length!=3)
-        reject('[-1]'); 
+        reject([-1]);
+      if (isNaN(values[0]) ||  isNaN(values[1]) ||  isNaN(values[2]))  reject([-1]);     
       const perimeter = (Number(values[0])+ Number(values[1]) + Number(values[2]))/2;
       const area =  Number(Math.sqrt(perimeter*((perimeter-values[0])*(perimeter-values[1])*(perimeter-values[2]))).toFixed(2));
       resolve(area);
       break;  
     case "square":
       if (values.length!=1)
-        reject('[-1]'); 
+        reject([-1]); 
+      if (isNaN(values[0]))  reject([-1]);   
       resolve(values[0]*values[0]);
       break;
 
     default:
-    reject('[-1]'); 
+    reject([-1]); 
   }
 
   
@@ -116,7 +121,7 @@ let getAreas=(shapes,values_arr)=>{
     });
     //return Promise.all(promises);
     //return Promise.all(promises.map(p=>p.catch(() => "[-1]"));
-   return Promise.all(promises.filter(p=>  p.catch(()=>{return ["[-1]"]
+   return Promise.all(promises.filter(p=>  p.catch(()=>{return ['[-1]']
   }))).catch(e=>{return ['[-1]']});
    //.reduce((item)=>{return [item==="[-1]"]}),0);
     /*promiseValues.then(item=>{
